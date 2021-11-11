@@ -1,0 +1,364 @@
+-- stickstat.officials definition
+
+CREATE TABLE `officials` (
+  `id` int NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `birthdate` varchar(100) DEFAULT NULL,
+  `birth_city` varchar(100) DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `state_prov` varchar(100) DEFAULT NULL,
+  `type` varchar(100) NOT NULL,
+  `number` int DEFAULT NULL,
+  `season_debut_id` int DEFAULT NULL,
+  `playoff_debut_id` int DEFAULT NULL,
+  `headshot` varchar(100) DEFAULT NULL,
+  `active` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.positions definition
+
+CREATE TABLE `positions` (
+  `code` varchar(5) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `abbreviation` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`code`),
+  UNIQUE KEY `positions_UN` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.venues definition
+
+CREATE TABLE `venues` (
+  `id` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `timezone` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.teams definition
+
+CREATE TABLE `teams` (
+  `id` int NOT NULL,
+  `nickname` varchar(100) DEFAULT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  `abbreviation` varchar(5) DEFAULT NULL,
+  `short_name` varchar(50) DEFAULT NULL,
+  `division` varchar(10) NOT NULL,
+  `venue` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `teams_FK` (`venue`),
+  CONSTRAINT `teams_FK` FOREIGN KEY (`venue`) REFERENCES `venues` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.coaches definition
+
+CREATE TABLE `coaches` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `position` varchar(100) NOT NULL,
+  `team` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `coaches_FK` (`position`),
+  KEY `coaches_FK_1` (`team`),
+  CONSTRAINT `coaches_FK` FOREIGN KEY (`position`) REFERENCES `positions` (`code`),
+  CONSTRAINT `coaches_FK_1` FOREIGN KEY (`team`) REFERENCES `teams` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.games definition
+
+CREATE TABLE `games` (
+  `id` int NOT NULL,
+  `season` varchar(25) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `home` int NOT NULL,
+  `away` int NOT NULL,
+  `start_time` varchar(100) DEFAULT NULL,
+  `end_time` varchar(100) DEFAULT NULL,
+  `venue` int DEFAULT NULL,
+  `home_score` int NOT NULL,
+  `away_score` int NOT NULL,
+  `is_shootout` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `games_FK` (`home`),
+  KEY `games_FK_1` (`away`),
+  KEY `games_FK_2` (`venue`),
+  CONSTRAINT `games_FK` FOREIGN KEY (`home`) REFERENCES `teams` (`id`),
+  CONSTRAINT `games_FK_1` FOREIGN KEY (`away`) REFERENCES `teams` (`id`),
+  CONSTRAINT `games_FK_2` FOREIGN KEY (`venue`) REFERENCES `venues` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.players definition
+
+CREATE TABLE `players` (
+  `id` int NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `team_id` int DEFAULT NULL,
+  `position` varchar(100) DEFAULT NULL,
+  `number` int DEFAULT NULL,
+  `birth_date` varchar(100) DEFAULT NULL,
+  `birth_city` varchar(100) DEFAULT NULL,
+  `birth_state` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `birth_country` varchar(100) DEFAULT NULL,
+  `nationality` varchar(100) DEFAULT NULL,
+  `height` int DEFAULT NULL,
+  `weight` int DEFAULT NULL,
+  `handedness` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  `rookie` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `players_FK` (`team_id`),
+  KEY `players_FK_1` (`position`),
+  CONSTRAINT `players_FK` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `players_FK_1` FOREIGN KEY (`position`) REFERENCES `positions` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_officials definition
+
+CREATE TABLE `game_officials` (
+  `game_id` int NOT NULL,
+  `official_id` int NOT NULL,
+  `home_team_id` int NOT NULL,
+  `away_team_id` int NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `total_pims` int NOT NULL,
+  `total_offside` int NOT NULL,
+  `total_icing` int NOT NULL,
+  KEY `game_officials_FK` (`game_id`),
+  KEY `game_officials_FK_1` (`official_id`),
+  KEY `game_officials_FK_2` (`home_team_id`),
+  KEY `game_officials_FK_3` (`away_team_id`),
+  CONSTRAINT `game_officials_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_officials_FK_1` FOREIGN KEY (`official_id`) REFERENCES `officials` (`id`),
+  CONSTRAINT `game_officials_FK_2` FOREIGN KEY (`home_team_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `game_officials_FK_3` FOREIGN KEY (`away_team_id`) REFERENCES `teams` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_decisions definition
+
+CREATE TABLE `game_decisions` (
+  `game_id` int NOT NULL,
+  `player_id` int NOT NULL,
+  `type` varchar(100) NOT NULL,
+  KEY `game_decisions_FK` (`game_id`),
+  KEY `game_decisions_FK_1` (`player_id`),
+  CONSTRAINT `game_decisions_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_decisions_FK_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_shifts definition
+
+CREATE TABLE `game_shifts` (
+  `shift_id` int NOT NULL,
+  `game_id` int NOT NULL,
+  `player_id` int NOT NULL,
+  `team_id` int NOT NULL,
+  `start_time` int NOT NULL,
+  `end_time` int NOT NULL,
+  `duration` int NOT NULL,
+  `period` int NOT NULL,
+  `shift_number` int NOT NULL,
+  `event_number` int NOT NULL,
+  `detail_code` int NOT NULL,
+  `type_code` int NOT NULL,
+  `event_description` varchar(100) DEFAULT NULL,
+  `event_details` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`shift_id`),
+  KEY `game_shifts_FK` (`game_id`),
+  KEY `game_shifts_FK_1` (`player_id`),
+  KEY `game_shifts_FK_2` (`team_id`),
+  CONSTRAINT `game_shifts_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_shifts_FK_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`),
+  CONSTRAINT `game_shifts_FK_2` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_coaches definition
+
+CREATE TABLE `game_coaches` (
+  `coach_id` int NOT NULL,
+  `game_id` int NOT NULL,
+  `team_id` int NOT NULL,
+  `opponent_id` int NOT NULL,
+  `home_away` varchar(4) NOT NULL,
+  KEY `game_coaches_FK` (`coach_id`),
+  KEY `game_coaches_FK_1` (`team_id`),
+  KEY `game_coaches_FK_2` (`opponent_id`),
+  KEY `game_coaches_FK_3` (`game_id`),
+  CONSTRAINT `game_coaches_FK` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`id`),
+  CONSTRAINT `game_coaches_FK_1` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `game_coaches_FK_2` FOREIGN KEY (`opponent_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `game_coaches_FK_3` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_events definition
+
+CREATE TABLE `game_events` (
+  `id` int NOT NULL,
+  `game_id` int NOT NULL,
+  `event_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `event_description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `event_detailed_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `period` int NOT NULL,
+  `period_type` varchar(100) NOT NULL,
+  `period_time` int NOT NULL,
+  `date_time` varchar(100) NOT NULL,
+  `away_goals` int NOT NULL,
+  `home_goals` int NOT NULL,
+  `event_x` int DEFAULT NULL,
+  `event_y` int DEFAULT NULL,
+  `player_one_id` int DEFAULT NULL,
+  `player_one_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `player_two_id` int DEFAULT NULL,
+  `player_two_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  KEY `game_events_FK` (`game_id`),
+  KEY `game_events_FK_1` (`player_one_id`),
+  KEY `game_events_FK_2` (`player_two_id`),
+  CONSTRAINT `game_events_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_events_FK_1` FOREIGN KEY (`player_one_id`) REFERENCES `players` (`id`),
+  CONSTRAINT `game_events_FK_2` FOREIGN KEY (`player_two_id`) REFERENCES `players` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_goalie_stats definition
+
+CREATE TABLE `game_goalie_stats` (
+  `game_id` int NOT NULL,
+  `player_id` int NOT NULL,
+  `position` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `jersey_number` int NOT NULL,
+  `toi` int DEFAULT NULL,
+  `goals` int DEFAULT NULL,
+  `assists` int DEFAULT NULL,
+  `pim` int DEFAULT NULL,
+  `shots` int DEFAULT NULL,
+  `saves` int DEFAULT NULL,
+  `pp_saves` int DEFAULT NULL,
+  `sh_saves` int DEFAULT NULL,
+  `ev_saves` int DEFAULT NULL,
+  `sh_shots_against` int DEFAULT NULL,
+  `pp_shots_against` int DEFAULT NULL,
+  `ev_shots_against` int DEFAULT NULL,
+  `decision` varchar(2) DEFAULT NULL,
+  `is_scratch` tinyint(1) DEFAULT '0',
+  KEY `game_goalie_stats_FK_1` (`game_id`),
+  KEY `game_goalie_stats_FK` (`player_id`),
+  CONSTRAINT `game_skater_stats_FK_1_copy` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `game_skater_stats_FK_copy` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_periods definition
+
+CREATE TABLE `game_periods` (
+  `game_id` int NOT NULL,
+  `period` int NOT NULL,
+  `period_type` varchar(100) NOT NULL,
+  `start_time` varchar(100) DEFAULT NULL,
+  `end_time` varchar(100) DEFAULT NULL,
+  `home_team_id` int NOT NULL,
+  `away_team_id` int NOT NULL,
+  `home_goals` int NOT NULL,
+  `away_goals` int NOT NULL,
+  `home_shots` int NOT NULL,
+  `away_shots` int NOT NULL,
+  `home_side` varchar(100) NOT NULL,
+  `away_side` varchar(100) NOT NULL,
+  KEY `game_periods_FK` (`game_id`),
+  KEY `game_periods_FK_1` (`home_team_id`),
+  KEY `game_periods_FK_2` (`away_team_id`),
+  CONSTRAINT `game_periods_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_periods_FK_1` FOREIGN KEY (`home_team_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `game_periods_FK_2` FOREIGN KEY (`away_team_id`) REFERENCES `teams` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_shootout_info definition
+
+CREATE TABLE `game_shootout_info` (
+  `game_id` int NOT NULL,
+  `home_team_id` int NOT NULL,
+  `away_team_id` int NOT NULL,
+  `home_goals` int NOT NULL,
+  `home_attempts` int NOT NULL,
+  `away_goals` int NOT NULL,
+  `away_attempts` int NOT NULL,
+  `start_time` varchar(100) NOT NULL,
+  KEY `game_shootout_info_FK` (`game_id`),
+  KEY `game_shootout_info_FK_1` (`home_team_id`),
+  KEY `game_shootout_info_FK_2` (`away_team_id`),
+  CONSTRAINT `game_shootout_info_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_shootout_info_FK_1` FOREIGN KEY (`home_team_id`) REFERENCES `teams` (`id`),
+  CONSTRAINT `game_shootout_info_FK_2` FOREIGN KEY (`away_team_id`) REFERENCES `teams` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_skater_stats definition
+
+CREATE TABLE `game_skater_stats` (
+  `game_id` int NOT NULL,
+  `player_id` int NOT NULL,
+  `position` varchar(100) NOT NULL,
+  `jersey_number` int NOT NULL,
+  `toi` int DEFAULT NULL,
+  `ev_toi` int DEFAULT NULL,
+  `pp_toi` int DEFAULT NULL,
+  `sh_toi` int DEFAULT NULL,
+  `assists` int DEFAULT NULL,
+  `goals` int DEFAULT NULL,
+  `shots` int DEFAULT NULL,
+  `hits` int DEFAULT NULL,
+  `pp_goals` int DEFAULT NULL,
+  `pp_assists` int DEFAULT NULL,
+  `pim` int DEFAULT NULL,
+  `faceoff_wins` int DEFAULT NULL,
+  `faceoff_taken` int DEFAULT NULL,
+  `takeaways` int DEFAULT NULL,
+  `giveaways` int DEFAULT NULL,
+  `sh_goals` int DEFAULT NULL,
+  `sh_assists` int DEFAULT NULL,
+  `shots_blocked` int DEFAULT NULL,
+  `plus_minus` float DEFAULT NULL,
+  `is_scratch` tinyint(1) NOT NULL DEFAULT '0',
+  KEY `game_skater_stats_FK` (`game_id`),
+  KEY `game_skater_stats_FK_1` (`player_id`),
+  CONSTRAINT `game_skater_stats_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_skater_stats_FK_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- stickstat.game_team_stats definition
+
+CREATE TABLE `game_team_stats` (
+  `game_id` int NOT NULL,
+  `team_id` int NOT NULL,
+  `goals` int NOT NULL,
+  `pim` int NOT NULL,
+  `shots` int NOT NULL,
+  `pp_goals` int NOT NULL,
+  `pp_opportunities` int NOT NULL,
+  `faceoff_pct` decimal(10,0) NOT NULL,
+  `shots_blocked` int NOT NULL,
+  `takeaways` int NOT NULL,
+  `giveaways` int NOT NULL,
+  `hits` int NOT NULL,
+  KEY `game_team_stats_FK` (`game_id`),
+  KEY `game_team_stats_FK_1` (`team_id`),
+  CONSTRAINT `game_team_stats_FK` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`),
+  CONSTRAINT `game_team_stats_FK_1` FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
