@@ -1,3 +1,5 @@
+import { PositionItem } from '@/data/interface';
+
 export interface NHLFeedData {
   copyright: string;
   gamePk: number;
@@ -295,11 +297,20 @@ export interface NHLFeedLiveDataBoxscore {
 }
 
 export interface NHLFeedLiveDataBoxscoreTeam {
+  coaches: NHLFeedLiveDataBoxscoreTeamCoaches[];
   team: NHLFeedLiveDataBoxscoreTeamInfo;
   teamStats: NHLFeedLiveDataBoxscoreTeamStats;
   players: {
     [id: string]: NHLFeedLiveDataBoxscoreTeamPlayer
   }
+}
+
+export interface NHLFeedLiveDataBoxscoreTeamCoaches {
+  person: {
+    fullName: string;
+    link: string;
+  }
+  position: PositionItem;
 }
 
 export interface NHLFeedLiveDataBoxscoreTeamInfo {
@@ -331,7 +342,7 @@ export interface NHLFeedLiveDataBoxscoreTeamSkaterStats {
 export interface NHLFeedLiveDataBoxscoreTeamPlayer {
   person: NHLFeedLiveDataBoxscoreTeamPlayerInfo;
   jerseyNumber: string;
-  position: NHLFeedLiveDataBoxscoreTeamPlayerPosition;
+  position: PositionItem;
   stats: {
     skaterStats ?: NHLFeedLiveDataBoxscoreTeamSkaterStats;
     goalieStats ?: NHLFeedLiveDataBoxscoreTeamGoalieStats;
@@ -344,13 +355,6 @@ export interface NHLFeedLiveDataBoxscoreTeamPlayerInfo {
   link: string;
   shootsCatches: string;
   rosterStatus: string;
-}
-
-export interface NHLFeedLiveDataBoxscoreTeamPlayerPosition {
-  code: string;
-  name: string;
-  type: string;
-  abbreviation: string;
 }
 
 export interface NHLFeedLiveDataBoxscoreTeamSkaterStats {
