@@ -1,4 +1,4 @@
-import mysql, { Query, OkPacket } from 'mysql';
+import mysql, { Query, OkPacket, format } from 'mysql';
 
 const connection = mysql.createPool({
   connectionLimit: 10,
@@ -9,4 +9,5 @@ const connection = mysql.createPool({
 });
 
 export default connection;
+export { format };
 export type { Query, OkPacket };

@@ -300,6 +300,7 @@ export interface NHLFeedLiveDataBoxscoreTeam {
   coaches: NHLFeedLiveDataBoxscoreTeamCoaches[];
   team: NHLFeedLiveDataBoxscoreTeamInfo;
   teamStats: NHLFeedLiveDataBoxscoreTeamStats;
+  goalies: number[];
   players: {
     [id: string]: NHLFeedLiveDataBoxscoreTeamPlayer
   }
@@ -322,10 +323,10 @@ export interface NHLFeedLiveDataBoxscoreTeamInfo {
 }
 
 export interface NHLFeedLiveDataBoxscoreTeamStats {
-  teamSkaterStats: NHLFeedLiveDataBoxscoreTeamSkaterStats;
+  teamSkaterStats: NHLFeedLiveDataBoxscoreTeamGameStats;
 }
 
-export interface NHLFeedLiveDataBoxscoreTeamSkaterStats {
+export interface NHLFeedLiveDataBoxscoreTeamGameStats {
   goals: number;
   pim: number;
   shots: number;
@@ -366,7 +367,7 @@ export interface NHLFeedLiveDataBoxscoreTeamSkaterStats {
   powerPlayGoals: number;
   powerPlayAssists: number;
   penaltyMinutes: number;
-  faceoffWins: number;
+  faceOffWins: number;
   faceoffTaken: number;
   takeaways: number;
   giveaways: number;

@@ -3,7 +3,7 @@ import DBTable from '@/db/DBTable';
 import { DBCoachItem } from './interface';
 
 
-class DBTeam implements DBTable<DBCoachItem> {
+class DBCoach implements DBTable<DBCoachItem> {
   TABLE_NAME = 'coaches';
 
   constructor(private props: Omit<DBCoachItem, 'id'>) {}
@@ -19,6 +19,11 @@ class DBTeam implements DBTable<DBCoachItem> {
       return this.update()
     }
 
+    if(db_item) {
+      return db_item;
+    }
+
+    // TODO: error out!
     return { id: -1, ...this.props };
   }
 
@@ -72,4 +77,4 @@ class DBTeam implements DBTable<DBCoachItem> {
   }
 }
 
-export default DBTeam;
+export default DBCoach;

@@ -3,7 +3,7 @@ abstract class DBTable<T> {
   find: () => Promise<T | undefined>;
   insert: () => Promise<T>;
   needsUpdate: (item: T) => boolean;
-  update: () => Promise<T>;
+  update: () => Promise<T | void>;
 }
 
 export default DBTable;

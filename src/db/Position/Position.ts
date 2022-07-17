@@ -2,8 +2,7 @@ import db from '@/db';
 import DBTable from '@/db/DBTable';
 import { DBPositionItem } from './interface';
 
-
-class DBVenue implements DBTable<DBPositionItem> {
+class DBPosition implements DBTable<DBPositionItem> {
   TABLE_NAME = 'positions';
   PRIMARY_KEY = 'code';
 
@@ -73,4 +72,4 @@ class DBVenue implements DBTable<DBPositionItem> {
   }
 }
 
-export default DBVenue;
+export default DBPosition;

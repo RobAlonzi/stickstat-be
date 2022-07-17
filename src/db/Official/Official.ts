@@ -1,15 +1,15 @@
 import db from '@/db';
 import DBTable from '@/db/DBTable';
-import { DBGameItem } from './interface';
+import { DBOfficialItem } from './interface';
 
 
-class DBGame implements DBTable<DBGameItem> {
-  TABLE_NAME = 'games';
+class DBOfficial implements DBTable<DBOfficialItem> {
+  TABLE_NAME = 'officials';
   PRIMARY_KEY = 'id';
 
-  constructor(private props: DBGameItem) {}
+  constructor(private props: DBOfficialItem) {}
 
-  async upsert(): Promise<DBGameItem> {
+  async upsert(): Promise<DBOfficialItem> {
     const db_item = await this.find();
 
     if(!db_item) {
@@ -23,7 +23,7 @@ class DBGame implements DBTable<DBGameItem> {
     return this.props;
   }
 
-  find(): Promise<DBGameItem | undefined> {
+  find(): Promise<DBOfficialItem | undefined> {
     return new Promise((res, rej) => {
       db.query(
       "SELECT * FROM ?? WHERE ?? = ?",
@@ -35,7 +35,7 @@ class DBGame implements DBTable<DBGameItem> {
     })
   }
 
-  insert(): Promise<DBGameItem> {
+  insert(): Promise<DBOfficialItem> {
     return new Promise((res, rej) => {
       db.query(
       "INSERT INTO ?? SET ?",
@@ -50,7 +50,7 @@ class DBGame implements DBTable<DBGameItem> {
     })
   }
 
-  update(): Promise<DBGameItem> {
+  update(): Promise<DBOfficialItem> {
     return new Promise((res, rej) => {
       db.query(
       "UPDATE ?? SET ? WHERE ?? = ?",
@@ -66,9 +66,9 @@ class DBGame implements DBTable<DBGameItem> {
     })
   }
 
-  needsUpdate(prev: DBGameItem): boolean {
-    return Object.entries(this.props).some(([key, value]) => prev[key as keyof DBGameItem] !== value);
+  needsUpdate(prev: DBOfficialItem): boolean {
+    return Object.entries(this.props).some(([key, value]) => prev[key as keyof DBOfficialItem] !== value);
   }
 }
 
-export default DBGame;
+export default DBOfficial;

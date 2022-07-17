@@ -1,0 +1,29 @@
+export interface DBGameSkaterItem {
+  game_id: number;
+  player_id: number;
+  team_id: number;
+  opponent_id: number;
+  home_away: string;
+  position: string;
+  jersey_number: number;
+  toi?: number;
+  ev_toi?: number;
+  pp_toi?: number;
+  sh_toi?: number;
+  assists?: number;
+  goals?: number;
+  shots?: number;
+  hits?: number;
+  pp_goals?: number;
+  pp_assists?: number;
+  pim?: number;
+  faceoff_wins?: number;
+  faceoff_taken?: number;
+  takeaways?: number;
+  giveaways?: number;
+  sh_goals?: number;
+  sh_assists?: number;
+  shots_blocked?: number;
+  plus_minus?: number;
+  is_scratch: boolean;
+}

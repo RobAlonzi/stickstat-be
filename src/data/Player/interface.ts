@@ -24,7 +24,7 @@ export interface NHLFeedPlayer {
   rookie: boolean;
   shootsCatches: string;
   rosterStatus: string;
-  currentTeam: NHLFeedPlayerCurrentTeam;
+  currentTeam?: NHLFeedPlayerCurrentTeam;
   primaryPosition: NHLFeedPlayerPrimaryPosition;
 }
 
